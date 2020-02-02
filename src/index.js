@@ -19,7 +19,6 @@ app.get('/api/v1', (request, response) => {
   });
 });
 
-
 app.use((request, response, next) => {
   const error = new Error('You are trying to access a wrong Route');
   error.status = 404;
