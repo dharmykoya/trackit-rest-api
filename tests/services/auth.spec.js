@@ -3,7 +3,7 @@ import app from '../../src/server';
 
 const URL = '/api/v1/auth';
 
-describe('Authentication API', () => {
+describe('Authentication Signup API', () => {
   it('should test api', async () => {
     const response = await supertest(app)
       .post(`${URL}/signup`)
