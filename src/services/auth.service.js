@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import model from '../database/models';
-// import User from '../database/models/user';
+import getToken from '../utils/jwtHelper';
 
 const { User } = model;
 
@@ -79,8 +79,57 @@ export const signUpService = async userDetails => {
     email: result.email,
     image: result.profileImage,
     id: result.uuid,
+    token: getToken(result),
     isNotified: result.isNotified
   };
 
   return user;
+};
+
+/**
+ * @method loginService
+ * - it verifies if user exist in the database
+ * - returns user data
+ *
+ * @param {Object} body request body's object
+ *
+ * @returns {Object} user object
+ */
+
+export const loginService = async loginDetails => {
+  let result;
+  const { email, password } = loginDetails;
+
+  try {
+    result = await User.findOne({
+      where: { email }
+    });
+  } catch (error) {
+    const response = { error: 'Database error', name: error.name };
+    throw response;
+  }
+
+  const validatePassword = plainText => {
+    return bcrypt.compareSync(plainText, result.password);
+  };
+
+  if (result && validatePassword(password)) {
+    const token = await getToken(result);
+
+    const user = {
+      firstName: result.firstName,
+      lastName: result.lastName,
+      email: result.email,
+      image: result.profileImage,
+      uuid: result.uuid,
+      token,
+      isNotified: result.isNotified
+    };
+    return user;
+  }
+  result = {
+    error: true,
+    message: 'incorrect email/password'
+  };
+  return result;
 };

@@ -34,6 +34,20 @@ const UserValidator = {
             .withMessage('Password must contain an upper case letter')
         ];
 
+      case 'login':
+        return [
+          check('email')
+            .isEmail()
+            .withMessage('Please enter a valid email')
+            .trim(),
+          check('password')
+            .not()
+            .isEmpty()
+            .withMessage('Password can not be empty')
+            .isLength({ min: 8 })
+            .withMessage('Password can not be less than 8 characters')
+        ];
+
       default:
     }
   },
